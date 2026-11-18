@@ -3,6 +3,8 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Auth from './pages/Auth';
 import History from "./pages/History";
+import InterviewReport from "./pages/InterviewReport";
+import Pricing from "./pages/Pricing";
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { setUserData } from './redux/userSlice';
@@ -34,6 +36,9 @@ function App() {
       <Route path='/auth' element={<Auth/>}/>
       <Route path="/history" element={<History />} />
       <Route path="/interview" element={<InterviewPage />} />      
+      <Route path="/history" element={<History />} />      
+      <Route path="/pricing" element={<Pricing />} />      
+      <Route path="/report/:interviewId" element={<InterviewReport />} />      
 
     </Routes>
   )
