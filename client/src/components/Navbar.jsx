@@ -226,7 +226,7 @@ function Navbar() {
 
                                             <button
                                                 type="button"
-                                                onClick={() => handleNavigation('/career-tracker')}
+                                                onClick={() => handleNavigation('/application-tracker')}
                                                 className="w-full flex items-center gap-3 text-left px-3 py-2.5 rounded-lg text-gray-700 hover:bg-[#F7F5FF] hover:text-[#7657E8] transition"
                                             >
                                                 <FaChartLine className="text-[#7657E8] shrink-0" />

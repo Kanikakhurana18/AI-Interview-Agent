@@ -5,12 +5,12 @@ import Auth from './pages/Auth'
 import History from './pages/History'
 import InterviewReport from './pages/InterviewReport'
 import Pricing from './pages/Pricing'
-import CareerTracker from './pages/CareerTracker'
 import axios from 'axios'
 import { useDispatch } from 'react-redux'
 import { setUserData } from './redux/userSlice'
 import InterviewPage from './pages/InterviewPage'
 import ATSReport from './pages/ATSReport'
+import ApplicationTracker from './pages/ApplicationTracker'
 
 export const serverUrl = "http://localhost:8000"
 
@@ -52,7 +52,7 @@ function App() {
             <Route path="/interview" element={<InterviewPage />} />
             <Route path="/ats-report" element={<ATSReport />} />
             <Route path="/pricing" element={<Pricing />} />
-            <Route path="/career-tracker" element={<CareerTracker />} />
+            <Route path="/application-tracker" element={<ApplicationTracker />} />
             <Route path="/report/:interviewId" element={<InterviewReport />} />
         </Routes>
     )
