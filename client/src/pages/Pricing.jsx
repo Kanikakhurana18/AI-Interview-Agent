@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { FaArrowLeft, FaCheck } from "react-icons/fa";
+import { FaArrowLeft, FaCheck, FaGem, FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
 import axios from "axios";
@@ -10,10 +10,10 @@ import { setUserData } from "../redux/userSlice";
 
 function Pricing() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const [selectedPlan, setSelectedPlan] = useState("free");
     const [loadingPlan, setLoadingPlan] = useState(null);
-    const dispatch= useDispatch()
 
     const plans = [
         {
@@ -21,14 +21,14 @@ function Pricing() {
             name: "Free",
             price: "₹0",
             credits: 100,
-            description: "Perfect for beginners starting interview preparation.",
+            description: "Perfect for beginners starting their interview preparation.",
             features: [
                 "100 AI Interview Credits",
                 "Basic Performance Report",
                 "Voice Interview Access",
                 "Limited History Tracking"
             ],
-            default: true,
+            default: true
         },
         {
             id: "basic",
@@ -36,13 +36,13 @@ function Pricing() {
             price: "₹100",
             amount: 10000,
             credits: 500,
-            description: "Great for focused practice and skill improvement.",
+            description: "Great for focused practice and improving your skills.",
             features: [
                 "500 AI Interview Credits",
-                "Detailed Feedback",
+                "Detailed AI Feedback",
                 "Performance Analytics",
                 "Full Interview History"
-            ],
+            ]
         },
         {
             id: "pro",
@@ -50,7 +50,7 @@ function Pricing() {
             price: "₹1000",
             amount: 100000,
             credits: 1000,
-            description: "Best value for serious job preparation.",
+            description: "The complete experience for serious job preparation.",
             features: [
                 "1000 AI Interview Credits",
                 "Advanced AI Feedback",
@@ -88,17 +88,27 @@ function Pricing() {
                 key: import.meta.env.VITE_RAZORPAY_KEY_ID,
                 amount: order.amount,
                 currency: order.currency || "INR",
-                name: "InterviewAI",
+                name: "MockAura AI",
                 description: `${plan.name} - ${plan.credits} Credits`,
                 order_id: order.id,
 
                 handler: async function (response) {
-                    const verifyPayment = await axios.post(serverUrl+ "/api/payment/verify", response, {withCredentials:true})
-                    dispatch(setUserData(verifyPayment.data.user))
+                    try {
+                        const verifyPayment = await axios.post(
+                            serverUrl + "/api/payment/verify",
+                            response,
+                            { withCredentials: true }
+                        );
 
-                    alert("Payemnt Succesful Credits Added!")
-                    navigate("/")
-                    setLoadingPlan(null);
+                        dispatch(setUserData(verifyPayment.data.user));
+                        alert("Payment Successful! Credits Added.");
+                        navigate("/");
+                    } catch (error) {
+                        console.error("Payment Verification Error:", error.response?.data || error.message);
+                        alert(error.response?.data?.message || "Payment verification failed. Please contact support.");
+                    } finally {
+                        setLoadingPlan(null);
+                    }
                 },
 
                 modal: {
@@ -106,7 +116,7 @@ function Pricing() {
                 },
 
                 theme: {
-                    color: "#10b981"
+                    color: "#7657E8"
                 }
             };
 
@@ -120,105 +130,138 @@ function Pricing() {
             rzp.open();
 
         } catch (error) {
-            console.error(
-                "Payment Error:",
-                error.response?.data || error.message
-            );
+            console.error("Payment Error:", error.response?.data || error.message);
+            alert(error.response?.data?.message || error.message || "Something went wrong.");
             setLoadingPlan(null);
         }
     };
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-gray-50 to-emerald-50 py-16 px-6">
+        <div className="min-h-screen bg-[#FAF9FF] px-5 py-12 sm:px-8 sm:py-16">
 
-            <div className="max-w-6xl mx-auto mb-14 flex items-start gap-4">
-                <button
-                    onClick={() => navigate("/")}
-                    className="mt-2 p-3 rounded-full bg-white shadow hover:shadow-md transition"
-                >
-                    <FaArrowLeft className="text-gray-600" />
-                </button>
+            <div className="max-w-6xl mx-auto mb-14">
+                <div className="flex items-center justify-between mb-12">
+                    <button
+                        onClick={() => navigate("/")}
+                        className="flex items-center justify-center w-11 h-11 rounded-xl bg-white border border-[#EAE5FF] text-[#7657E8] hover:bg-[#F0EBFF] transition shadow-sm"
+                    >
+                        <FaArrowLeft />
+                    </button>
 
-                <div className="text-center w-full">
-                    <h1 className="text-4xl font-bold text-gray-800">
+                    <div className="flex items-center gap-2 text-[#7657E8] font-bold text-lg">
+                        <FaGem />
+                        <span>MockAura AI</span>
+                    </div>
+                </div>
+
+                <div className="text-center max-w-2xl mx-auto">
+                    <span className="inline-flex items-center gap-2 bg-[#F0EBFF] text-[#7657E8] px-4 py-2 rounded-full text-sm font-semibold mb-5">
+                        <FaStar />
+                        Simple and Flexible Pricing
+                    </span>
+
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#211B3A] tracking-tight">
                         Choose Your Plan
                     </h1>
-                    <p className="text-gray-500 mt-3 text-lg">
-                        Flexible pricing to match your interview preparation goals.
+
+                    <p className="text-[#77718D] mt-4 text-base sm:text-lg leading-relaxed">
+                        Invest in your preparation. Practice smarter and get ready to crack your next interview.
                     </p>
                 </div>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-7 max-w-6xl mx-auto items-stretch">
 
-                {plans.map((plan) => {
+                {plans.map((plan, index) => {
                     const isSelected = selectedPlan === plan.id;
 
                     return (
                         <motion.div
                             key={plan.id}
-                            whileHover={!plan.default ? { scale: 1.03 } : {}}
+                            initial={{ opacity: 0, y: 25 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: index * 0.12 }}
+                            whileHover={!plan.default ? { y: -7 } : {}}
                             onClick={() => {
                                 if (!plan.default) setSelectedPlan(plan.id);
                             }}
-                            className={`relative rounded-3xl p-8 transition-all duration-300 border
+                            className={`relative flex flex-col rounded-3xl p-7 sm:p-8 border transition-all duration-300
                                 ${isSelected
-                                    ? "border-emerald-600 shadow-2xl bg-white"
-                                    : "border-gray-200 bg-white shadow-md"
+                                    ? "border-[#7657E8] shadow-[0_15px_45px_rgba(118,87,232,0.13)] bg-white"
+                                    : "border-[#EAE5FF] bg-white shadow-sm hover:shadow-lg"
                                 }
                                 ${plan.default ? "cursor-default" : "cursor-pointer"}
                             `}
                         >
                             {plan.badge && (
-                                <span className="absolute -top-3 right-6 bg-emerald-600 text-white text-xs font-semibold px-4 py-1.5 rounded-full">
+                                <span className="absolute -top-3 right-6 bg-[#7657E8] text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-md">
                                     {plan.badge}
                                 </span>
                             )}
 
-                            <h2 className="text-2xl font-bold text-gray-800">
+                            <div className="w-12 h-12 rounded-2xl bg-[#F0EBFF] flex items-center justify-center text-[#7657E8] text-xl mb-5">
+                                {plan.id === "free" ? (
+                                    <FaStar />
+                                ) : plan.id === "basic" ? (
+                                    <FaGem />
+                                ) : (
+                                    <FaGem />
+                                )}
+                            </div>
+
+                            <h2 className="text-2xl font-bold text-[#211B3A]">
                                 {plan.name}
                             </h2>
 
-                            <p className="text-gray-500 text-sm mt-3 min-h-10">
+                            <p className="text-[#89839D] text-sm mt-3 min-h-[42px] leading-relaxed">
                                 {plan.description}
                             </p>
 
-                            <div className="mt-6">
-                                <span className="text-4xl font-bold text-gray-900">
+                            <div className="mt-7 flex items-baseline">
+                                <span className="text-4xl font-bold text-[#211B3A]">
                                     {plan.price}
                                 </span>
-                                <span className="text-gray-500 text-sm ml-2">
+                                <span className="text-[#9993A9] text-sm ml-2">
                                     / one time
                                 </span>
                             </div>
 
-                            <div className="mt-4 bg-emerald-50 text-emerald-700 rounded-xl p-3">
-                                <p className="font-semibold text-sm">
+                            <div className="mt-6 bg-[#F5F1FF] border border-[#EAE5FF] rounded-2xl p-4">
+                                <p className="text-[#7657E8] font-bold text-lg">
                                     {plan.credits} AI Credits
+                                </p>
+                                <p className="text-[#9993A9] text-xs mt-1">
+                                    Use credits for AI mock interviews
                                 </p>
                             </div>
 
-                            <div className="mt-7 space-y-4">
+                            <div className="mt-7 space-y-4 flex-1">
                                 {plan.features.map((feature, index) => (
                                     <div
                                         key={index}
-                                        className="flex items-center gap-3 text-gray-600 text-sm"
+                                        className="flex items-start gap-3 text-[#625C77] text-sm"
                                     >
-                                        <FaCheck className="text-emerald-600" />
-                                        {feature}
+                                        <span className="w-5 h-5 shrink-0 rounded-full bg-[#F0EBFF] flex items-center justify-center mt-[-2px]">
+                                            <FaCheck className="text-[#7657E8] text-[10px]" />
+                                        </span>
+                                        <span>{feature}</span>
                                     </div>
                                 ))}
                             </div>
 
                             <button
                                 disabled={plan.default || loadingPlan !== null}
-                                onClick={() => handlePayment(plan)}
-                                className={`w-full mt-8 py-3 rounded-xl font-semibold transition
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handlePayment(plan);
+                                }}
+                                className={`w-full mt-9 py-3.5 rounded-xl font-semibold text-sm transition-all duration-300
                                     ${isSelected
-                                        ? "bg-emerald-600 text-white"
-                                        : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                                        ? "bg-[#7657E8] text-white hover:bg-[#6546D6] shadow-lg shadow-[#7657E8]/20"
+                                        : "bg-[#F0EBFF] text-[#7657E8] hover:bg-[#E6DEFF]"
                                     }
-                                    ${plan.default ? "opacity-70 cursor-not-allowed" : ""}
+                                    ${plan.default ? "opacity-70 cursor-not-allowed" : "cursor-pointer"}
+                                    disabled:opacity-60 disabled:cursor-not-allowed
                                 `}
                             >
                                 {loadingPlan === plan.id
@@ -230,12 +273,15 @@ function Pricing() {
                                             : "Choose Plan"
                                 }
                             </button>
-
                         </motion.div>
                     );
                 })}
 
             </div>
+
+            <p className="text-center text-[#9993A9] text-sm mt-12">
+                Secure payments powered by Razorpay.
+            </p>
         </div>
     );
 }
